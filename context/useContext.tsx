@@ -107,7 +107,7 @@ export const GlobalContextProvider: FC<GlobalContextProviderProps> = ({
       setSelected(data[0]);
       setOpenLoader(false);
     };
-    if (typeof window !== "undefined" && "serviceWorker" in navigator) {
+    if (typeof window !== "undefined" && "serviceWorker" in window.navigator) {
       generateToken();
       onMessage(messaging, (payload: MessagePayload) => {
         console.log(payload);
