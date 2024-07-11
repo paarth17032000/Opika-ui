@@ -15,7 +15,7 @@ import Loader from "@/components/Loader/Loader";
 import AddPostModal from "@/components/Modal/AddPostModal";
 import { Users } from "@/components/types/types";
 import { fetchUsers } from "@/api/users/_fetchUsers";
-import { generateToken, messaging } from "@/components/Notifications/firebase";
+import { generateToken, messaging } from "@/firebase";
 import { MessagePayload, onMessage } from "firebase/messaging";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -107,13 +107,13 @@ export const GlobalContextProvider: FC<GlobalContextProviderProps> = ({
       setSelected(data[0]);
       setOpenLoader(false);
     };
-    if (typeof window !== "undefined" && "serviceWorker" in window.navigator) {
-      generateToken();
-      onMessage(messaging, (payload: MessagePayload) => {
-        console.log(payload);
-        // recieved firebase notification can be handled here
-      });
-    }
+    // if (typeof window !== "undefined" && "serviceWorker" in window.navigator) {
+    // }
+    generateToken();
+    onMessage(messaging, (payload: MessagePayload) => {
+      console.log(payload);
+      // recieved firebase notification can be handled here
+    });
 
     getUsersData();
   }, []);
