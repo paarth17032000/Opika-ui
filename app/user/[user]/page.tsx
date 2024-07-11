@@ -19,25 +19,25 @@ interface IUserDetails {
   phone: string;
 } 
 
-export default function User({ params }: { params: { user: number } }) {
+export default function User({ params }: { params: { user: string } }) {
   const { user: userId } = params;
   const { setOpenLoader } = useGlobalContext();
   const [userDetails, setUserDetails] = useState<IUserDetails | null>(null);
   const [userPosts, setUserPosts] = useState<IUserPost[]>([]);
   useEffect(() => {
     const getUserDetails = async () => {
-      setOpenLoader(true)
       const userData = await fetchUserDetails(userId);
       const userPosts = await fetchUserPosts(userId);
       setUserDetails(userData);
       setUserPosts(userPosts);
-      setOpenLoader(false)
     };
+    setOpenLoader(true)
     getUserDetails();
+    setOpenLoader(false)
   }, []);
   console.log(userDetails, userPosts)
   return (
-    <main className="flex min-h-[calc(100vh-84px)] flex-col items-center justify-between px-24 py-10">
+    <main className="flex min-h-[calc(100vh-84px)] flex-col items-center justify-between px-10 md:px-24 py-10">
       {userDetails != null && userDetails.id && (
         <div className="max-w-6xl w-full text-sm">
           <div>
@@ -55,7 +55,7 @@ export default function User({ params }: { params: { user: number } }) {
 
           <div className="flex flex-col gap-5 mt-10">
             <div className="font-bold text-xl">User Posts</div>
-            <div className="z-10 max-w-6xl w-full text-sm  grid grid-cols-2 gap-4">
+            <div className="z-10 max-w-6xl w-full text-sm  grid md:grid-cols-2 grid-cols-1 gap-4">
               {userPosts.length > 0 &&
                 userPosts.map((postObj) => (
                   <div
