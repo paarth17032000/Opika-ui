@@ -1,6 +1,5 @@
 "use client";
 import {
-  useWalletInfo,
   useWeb3ModalAccount,
   useWeb3ModalProvider,
 } from "@web3modal/ethers/react";
@@ -10,8 +9,7 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
 export default function Navbar() {
-  const { address } = useWeb3ModalAccount();
-  const { walletInfo } = useWalletInfo();
+  const { address, isConnected } = useWeb3ModalAccount();
   const { walletProvider } = useWeb3ModalProvider();
   const [balance, setBalance] = useState<string>('0');
   const getBalance = async (address: `0x${string}`) => {
@@ -23,9 +21,10 @@ export default function Navbar() {
     const balanceInEth = ethers.formatEther(balance);
     const numberValue = parseFloat(balanceInEth).toFixed(3)
     setBalance(numberValue);
+    console.log(numberValue, 'eth balance')
   };
   useEffect(() => {
-    if (address != undefined) {
+    if (address != undefined && address.length > 0) {
       getBalance(address);
     }
   }, [address]);
@@ -36,7 +35,7 @@ export default function Navbar() {
     >
       <div>Opika</div>
       <div className="flex items-center gap-4">
-        <div className="bg-white/10 text-white px-3 py-1 text-md rounded-[16px]">{balance} eth</div>
+        {isConnected && <div className="bg-white/10 text-white px-3 py-1 text-md rounded-[16px]">{balance} eth</div>}
         <w3m-button />
       </div>
     </Link>

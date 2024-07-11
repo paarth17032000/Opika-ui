@@ -10,7 +10,7 @@ interface MessagePayload {
   };
 }
 
-export const sendNotification = async () => {
+export const sendNotification = async (title: string, body: string) => {
   const projectId = "opika-ui";
   const url = `https://fcm.googleapis.com/v1/projects/${projectId}/messages:send`;
   const messagePayload: MessagePayload = {
@@ -18,8 +18,8 @@ export const sendNotification = async () => {
       token:
         "frS2MBCcKxKa4zYyuqAoRS:APA91bFQfjEIP2SQXc3lUN20W2BYoEJ1YTx2QuSp6xe37LjH4ZUXm_dQU_ghF8cw1IsFdwlB95KS3rj1Xf8X95prhCzbbPxSk0MUD_khZQy35ORNyhEdk06Th0xz_6hEy7Gc5dIqZh0U",
       notification: {
-        title: "Notification",
-        body: "Body",
+        title,
+        body,
       },
     },
   }
@@ -31,7 +31,7 @@ export const sendNotification = async () => {
       },
     });
 
-    console.log("Message sent successfully:", response.data);
+    console.log("Request is not successful because of access_token needed for authorization which lasts only for an hour.", response.data);
   } catch (error) {
     console.error("Error sending message:", error);
   }

@@ -1,3 +1,4 @@
+"use client"
 import {
   Dialog,
   DialogBackdrop,
@@ -6,7 +7,7 @@ import {
 } from "@headlessui/react";
 import SelectUser from "../SelectUserComponent/SelectUser";
 import { useGlobalContext } from "@/context/useContext";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 
 interface IAddPostModal {
   openAddPostModal: boolean;
@@ -30,6 +31,8 @@ export default function AddPostModal({
   setPostVal
 }: IAddPostModal) {
   const { users, handlePostAdd } = useGlobalContext();
+  const [isError, setIsError] = useState<boolean>(false)
+  const [error, setError] = useState<string>('')
 
   const handleFieldChange = (e: any) => {
     setPostVal({
@@ -37,6 +40,20 @@ export default function AddPostModal({
       [e.target.name]: e.target.value,
     });
   };
+  const handleErrorAndPostAdd = () => {
+    if(postVal.title.length == 0){
+      setIsError(true)
+      setError('Title can not be empty.')
+    } else if(postVal.desc.length == 0){
+      setIsError(true)
+      setError('Description can not be empty.')
+    } else {
+      setIsError(false)
+      setError('')
+      setIsOpenAddPostModal(false)
+      handlePostAdd()
+    }
+  }
   return (
     <Dialog
       open={openAddPostModal}
@@ -66,6 +83,7 @@ export default function AddPostModal({
               type="text"
               name="title"
               placeholder="title"
+              required
               onChange={handleFieldChange}
               className="bg-white border-2 border-black/90 rounded-lg py-1.5 pr-8 pl-3 text-sm/6"
             />
@@ -77,13 +95,17 @@ export default function AddPostModal({
             <textarea
               rows={5}
               name="desc"
+              required
               placeholder="description"
               onChange={handleFieldChange}
               className="bg-white border-2 border-black/90 rounded-lg py-1.5 pr-8 pl-3 text-sm/6"
             />
           </div>
+          {isError && (
+            <div className="w-full bg-white/70 border border-black/70 rounded-lg py-2 my-3 text-red-700 font-[500] text-md text-center">{error}</div>
+          )}
           <div
-            onClick={handlePostAdd}
+            onClick={handleErrorAndPostAdd}
             className="bg-black/90 duration-300 linear hover:bg-black rounded-lg w-full text-white py-2 px-4 text-center cursor-pointer"
           >
             Add Post

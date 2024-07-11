@@ -1,5 +1,4 @@
 "use client";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { fetchUserDetails } from "@/api/users/_fetchUserDetails";
 import { fetchUserPosts } from "@/api/users/_fetchUserPosts";
@@ -35,7 +34,6 @@ export default function User({ params }: { params: { user: string } }) {
     getUserDetails();
     setOpenLoader(false)
   }, []);
-  console.log(userDetails, userPosts)
   return (
     <main className="flex min-h-[calc(100vh-84px)] flex-col items-center justify-between px-10 md:px-24 py-10">
       {userDetails != null && userDetails.id && (

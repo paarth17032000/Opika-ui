@@ -1,6 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getMessaging, getToken } from "firebase/messaging";
+import { toastMessage } from "../Toast/toastMessage";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -30,9 +31,9 @@ export const generateToken = async () => {
       vapidKey:
         "BP3q6fswZIY4-xMx3A0F5URbZE24VMXCo9ZQr5GMEtCXOO4G1abB12iuQ6hngb1kfutqrnb9fjo-uyC0xPoGLyk",
     });
-    console.log(token)
 }
 } catch (err) {
     console.log(err)
+    toastMessage('Error while generating firebase token', 'error')
 }
 };

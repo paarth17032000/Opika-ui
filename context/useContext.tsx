@@ -17,20 +17,21 @@ import { Users } from "@/components/types/types";
 import { fetchUsers } from "@/api/users/_fetchUsers";
 import { generateToken, messaging } from "@/components/Notifications/firebase";
 import { MessagePayload, onMessage } from "firebase/messaging";
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { toastMessage } from "@/components/Toast/toastMessage";
+import { sendNotification } from "@/api/firebase/_notify";
 
 // Your WalletConnect Cloud project ID
 export const projectId = "2840c15ceebc7ebfb00536a56d4d86ef";
 
 // 2. Set chains
-const polygonAmoy = {
-  chainId: 80002,
-  name: "Polygon Amoy Testnet",
-  currency: "MATIC",
-  explorerUrl: "https://amoy.polygonscan.com/",
-  rpcUrl: "https://rpc-amoy.polygon.technology/",
+const mainnet = {
+  chainId: 1,
+  name: "Ethereum",
+  currency: "ETH",
+  explorerUrl: "https://etherscan.io",
+  rpcUrl: "https://cloudflare-eth.com",
 };
 
 // 3. Create a metadata object
@@ -50,14 +51,14 @@ const ethersConfig = defaultConfig({
   enableEIP6963: true, // true by default
   enableInjected: true, // true by default
   enableCoinbase: true, // true by default
-  rpcUrl: "https://rpc-amoy.polygon.technology/", // used for the Coinbase SDK
-  defaultChainId: 80002, // used for the Coinbase SDK
+  rpcUrl: "...", // used for the Coinbase SDK
+  defaultChainId: 1, // used for the Coinbase SDK
 });
 
 // 5. Create a Web3Modal instance
 createWeb3Modal({
   ethersConfig,
-  chains: [polygonAmoy],
+  chains: [mainnet],
   projectId,
   enableAnalytics: true, // Optional - defaults to your Cloud configuration
   enableOnramp: true, // Optional - false as default
@@ -93,7 +94,7 @@ export const GlobalContextProvider: FC<GlobalContextProviderProps> = ({
   const [openLoader, setOpenLoader] = useState<boolean>(false);
   const [openAddPostModal, setIsOpenAddPostModal] = useState(false);
   const [users, setUsers] = useState<Users[]>([]);
-  const [selected, setSelected] = useState<Users | null>(users[0]);
+  const [selected, setSelected] = useState<Users | null>(null);
   const [postVal, setPostVal] = useState<{ title: string; desc: string }>({
     title: "",
     desc: "",
@@ -103,22 +104,39 @@ export const GlobalContextProvider: FC<GlobalContextProviderProps> = ({
     const getUsersData = async () => {
       const data = await fetchUsers();
       setUsers(data);
+      setSelected(data[0]);
       setOpenLoader(false);
     };
-    generateToken()
-    onMessage(messaging, (payload: MessagePayload) => {
-      console.log(payload)
-      // toastMessage(payload?.data, 'success')
-    })
-    
+    if (typeof window !== "undefined" && "serviceWorker" in navigator) {
+      generateToken();
+      onMessage(messaging, (payload: MessagePayload) => {
+        console.log(payload);
+        // recieved firebase notification can be handled here
+      });
+    }
+
     getUsersData();
   }, []);
   const handlePostAdd = () => {
-    console.log(selected, postVal)
-  }
+    toastMessage(`${postVal.title} by ${selected?.name}`, "success");
+
+    // sendNotification sends request to firebase
+    sendNotification(
+      `Post ${postVal.title} by ${selected?.name} added recently.`,
+      postVal.desc
+    );
+  };
   return (
     <GlobalContext.Provider
-      value={{ setOpenLoader, setIsOpenAddPostModal, openAddPostModal, users, selected, setSelected, handlePostAdd }}
+      value={{
+        setOpenLoader,
+        setIsOpenAddPostModal,
+        openAddPostModal,
+        users,
+        selected,
+        setSelected,
+        handlePostAdd,
+      }}
     >
       {openLoader && <Loader />}
       <AddPostModal
